@@ -1,0 +1,10 @@
+{% schema %}
+{
+  "name": "Cookie Consent Bar",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
+
+<div id="cookieconsent-wrapper" data-shop="{{ shop.permanent_domain }}"></div>
+{{ 'cookie-consent.js' | asset_url | script_tag }}
