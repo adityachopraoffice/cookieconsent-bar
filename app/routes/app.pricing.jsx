@@ -1,11 +1,23 @@
 import { Page, BlockStack } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
-import { useSubmit } from "react-router";
+import { useSubmit, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 export const headers = (headersArgs) => {
   return boundary.headers(headersArgs);
+};
+
+export const loader = async ({ request }) => {
+  const { billing } = await authenticate.admin(request);
+  const billingCheck = await billing.check({
+    plans: ["Premium Plan"],
+    isTest: true,
+  });
+
+  return {
+    hasActivePayment: billingCheck.hasActivePayment,
+  };
 };
 
 export const action = async ({ request }) => {
@@ -18,6 +30,19 @@ export const action = async ({ request }) => {
       plan: "Premium Plan",
       isTest: true,
     });
+  } else if (plan === "Cancel") {
+    const billingCheck = await billing.check({
+      plans: ["Premium Plan"],
+      isTest: true,
+    });
+    const subscription = billingCheck.appSubscriptions[0];
+    if (subscription) {
+      await billing.cancel({
+        subscriptionId: subscription.id,
+        isTest: true,
+        prorate: true,
+      });
+    }
   }
   return null;
 };
@@ -30,9 +55,14 @@ const CheckIcon = () => (
 
 export default function Pricing() {
   const submit = useSubmit();
+  const { hasActivePayment } = useLoaderData();
 
   const handleUpgrade = () => {
     submit({ plan: "Premium Plan" }, { method: "post" });
+  };
+  
+  const handleCancel = () => {
+    submit({ plan: "Cancel" }, { method: "post" });
   };
 
   return (
@@ -102,7 +132,8 @@ export default function Pricing() {
             </ul>
 
             <button 
-              disabled
+              disabled={!hasActivePayment}
+              onClick={hasActivePayment ? handleCancel : undefined}
               style={{
                 width: '100%',
                 background: '#f4f6f8',
@@ -112,10 +143,10 @@ export default function Pricing() {
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: 'bold',
-                cursor: 'not-allowed',
+                cursor: !hasActivePayment ? 'not-allowed' : 'pointer',
               }}
             >
-              Current Plan
+              {!hasActivePayment ? "Current Plan" : "Downgrade to Free"}
             </button>
           </div>
 
@@ -186,30 +217,35 @@ export default function Pricing() {
             </ul>
 
             <button 
-              onClick={handleUpgrade}
+              onClick={hasActivePayment ? undefined : handleUpgrade}
+              disabled={hasActivePayment}
               style={{
                 width: '100%',
-                background: '#1f2124',
-                color: '#fff',
-                border: 'none',
+                background: hasActivePayment ? '#f4f6f8' : '#1f2124',
+                color: hasActivePayment ? '#8c9196' : '#fff',
+                border: hasActivePayment ? '1px solid #e1e3e5' : 'none',
                 padding: '16px',
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(31, 33, 36, 0.2)',
+                cursor: hasActivePayment ? 'not-allowed' : 'pointer',
+                boxShadow: hasActivePayment ? 'none' : '0 4px 15px rgba(31, 33, 36, 0.2)',
                 transition: 'all 0.2s ease',
               }}
               onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(31, 33, 36, 0.3)';
+                if(!hasActivePayment) {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(31, 33, 36, 0.3)';
+                }
               }}
               onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 15px rgba(31, 33, 36, 0.2)';
+                if(!hasActivePayment) {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(31, 33, 36, 0.2)';
+                }
               }}
             >
-              Upgrade to Premium
+              {hasActivePayment ? "Current Plan" : "Upgrade to Premium"}
             </button>
           </div>
         </div>
