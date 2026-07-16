@@ -29,7 +29,6 @@ export const action = async ({ request }) => {
     await billing.request({
       plan: "Premium Plan",
       isTest: true,
-      returnUrl: `${process.env.SHOPIFY_APP_URL}/app/pricing`,
     });
   } else if (plan === "Cancel") {
     const billingCheck = await billing.check({
