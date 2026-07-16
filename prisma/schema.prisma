@@ -39,4 +39,5 @@ model ShopSettings {
   buttonColor       String @default("#FFFFFF")
   buttonTextColor   String @default("#000000")
   position          String @default("bottom")
+  layout            String @default("banner")
 }

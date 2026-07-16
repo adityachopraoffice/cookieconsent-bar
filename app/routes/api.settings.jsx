@@ -30,6 +30,7 @@ export async function loader({ request }) {
       buttonColor: "#FFFFFF",
       buttonTextColor: "#000000",
       position: "bottom",
+      layout: "banner",
     };
   }
 

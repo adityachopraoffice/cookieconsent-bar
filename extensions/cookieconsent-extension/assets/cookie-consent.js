@@ -24,10 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
       var banner = document.createElement('div');
       banner.id = 'cookieconsent-banner';
       banner.style.position = 'fixed';
-      banner.style.left = '0';
-      banner.style.right = '0';
-      banner.style[settings.position === 'top' ? 'top' : 'bottom'] = '0';
-      banner.style.width = '100%';
       banner.style.backgroundColor = settings.bgColor || '#000';
       banner.style.color = settings.textColor || '#fff';
       banner.style.padding = '15px';
@@ -37,6 +33,33 @@ document.addEventListener('DOMContentLoaded', function() {
       banner.style.boxSizing = 'border-box';
       banner.style.zIndex = '999999';
       banner.style.fontFamily = 'sans-serif';
+
+      var layout = settings.layout || 'banner';
+      if (layout === 'pill') {
+        banner.style[settings.position === 'top' ? 'top' : 'bottom'] = '20px';
+        banner.style.left = '50%';
+        banner.style.transform = 'translateX(-50%)';
+        banner.style.width = 'auto';
+        banner.style.maxWidth = '90%';
+        banner.style.borderRadius = '50px';
+        banner.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      } else if (layout === 'box') {
+        banner.style[settings.position === 'top' ? 'top' : 'bottom'] = '20px';
+        banner.style.left = '20px';
+        banner.style.width = '350px';
+        banner.style.maxWidth = 'calc(100% - 40px)';
+        banner.style.borderRadius = '8px';
+        banner.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+        banner.style.flexDirection = 'column';
+        banner.style.alignItems = 'flex-start';
+        banner.style.gap = '15px';
+      } else {
+        // banner
+        banner.style.left = '0';
+        banner.style.right = '0';
+        banner.style[settings.position === 'top' ? 'top' : 'bottom'] = '0';
+        banner.style.width = '100%';
+      }
 
       var textDiv = document.createElement('div');
       textDiv.innerText = settings.bannerText || 'We use cookies to improve your experience.';
@@ -55,6 +78,10 @@ document.addEventListener('DOMContentLoaded', function() {
       var btnDiv = document.createElement('div');
       btnDiv.style.display = 'flex';
       btnDiv.style.gap = '10px';
+      if (layout === 'box') {
+        btnDiv.style.width = '100%';
+        btnDiv.style.justifyContent = 'flex-end';
+      }
 
       var acceptBtn = document.createElement('button');
       acceptBtn.innerText = settings.acceptButtonText || 'Accept';

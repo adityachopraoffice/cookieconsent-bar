@@ -27,6 +27,7 @@ export const action = async ({ request }) => {
     buttonTextColor: formData.get("buttonTextColor"),
     acceptButtonText: formData.get("acceptButtonText"),
     declineButtonText: "Decline",
+    layout: formData.get("layout") || "banner",
   };
 
   await prisma.shopSettings.upsert({
@@ -38,23 +39,26 @@ export const action = async ({ request }) => {
   return { success: true };
 };
 
-const TemplatePreview = ({ bannerText, bgColor, textColor, buttonColor, buttonTextColor, acceptText, isPill }) => (
+const TemplatePreview = ({ bannerText, bgColor, textColor, buttonColor, buttonTextColor, acceptText, layout }) => (
   <div style={{
     backgroundColor: bgColor,
     color: textColor,
-    padding: isPill ? "12px 20px" : "15px",
+    padding: layout === 'pill' ? "12px 20px" : "15px",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: layout === 'box' ? "column" : "row",
+    alignItems: layout === 'box' ? "flex-start" : "center",
+    justifyContent: "space-between",
     gap: "10px",
     boxSizing: "border-box",
     fontFamily: "sans-serif",
     fontSize: "12px",
-    borderRadius: isPill ? "50px" : "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-    width: "90%",
+    borderRadius: layout === 'banner' ? "4px" : (layout === 'pill' ? "50px" : "8px"),
+    boxShadow: layout === 'banner' ? "none" : "0 4px 12px rgba(0,0,0,0.15)",
+    width: layout === 'banner' ? "100%" : (layout === 'pill' ? "auto" : "100%"),
+    maxWidth: layout === 'box' ? "300px" : "100%",
   }}>
     <div style={{ fontWeight: 500, lineHeight: 1.4 }}>{bannerText}</div>
-    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", width: layout === 'box' ? "100%" : "auto" }}>
       <button style={{
         backgroundColor: "transparent",
         color: textColor,
@@ -73,7 +77,7 @@ const TemplatePreview = ({ bannerText, bgColor, textColor, buttonColor, buttonTe
         cursor: "pointer",
         fontWeight: "bold",
         fontSize: "11px",
-        borderRadius: isPill ? "50px" : "4px"
+        borderRadius: layout === 'banner' ? "4px" : (layout === 'pill' ? "50px" : "4px")
       }}>
         {acceptText}
       </button>
@@ -208,7 +212,8 @@ export default function Templates() {
         textColor: "#111111",
         buttonColor: "#111111",
         buttonTextColor: "#ffffff",
-        acceptButtonText: "Accept All"
+        acceptButtonText: "Accept All",
+        layout: "banner"
       },
       mockup: (
         <TemplatePreview 
@@ -218,6 +223,7 @@ export default function Templates() {
           buttonColor="#111111"
           buttonTextColor="#ffffff"
           acceptText="Accept All"
+          layout="banner"
         />
       )
     },
@@ -232,7 +238,8 @@ export default function Templates() {
         textColor: "#ffffff",
         buttonColor: "#ffffff",
         buttonTextColor: "#1a1a1a",
-        acceptButtonText: "Got it!"
+        acceptButtonText: "Got it!",
+        layout: "banner"
       },
       mockup: (
         <TemplatePreview 
@@ -242,6 +249,7 @@ export default function Templates() {
           buttonColor="#ffffff"
           buttonTextColor="#1a1a1a"
           acceptText="Got it!"
+          layout="banner"
         />
       )
     },
@@ -257,7 +265,8 @@ export default function Templates() {
         textColor: "#0b5c9c",
         buttonColor: "#0b5c9c",
         buttonTextColor: "#ffffff",
-        acceptButtonText: "Allow Cookies"
+        acceptButtonText: "Allow Cookies",
+        layout: "pill"
       },
       mockup: (
         <TemplatePreview 
@@ -267,7 +276,34 @@ export default function Templates() {
           buttonColor="#0b5c9c"
           buttonTextColor="#ffffff"
           acceptText="Allow Cookies"
-          isPill={true}
+          layout="pill"
+        />
+      )
+    },
+    {
+      title: "Glassmorphism Box",
+      tier: "PREMIUM",
+      gradient: "linear-gradient(135deg, #74b9ff 0%, #81ecec 100%)",
+      ctaText: hasActivePayment ? "Apply Design" : "Upgrade to Premium",
+      isUpgrade: !hasActivePayment,
+      config: {
+        bannerText: "We use cookies to offer you a better browsing experience.",
+        bgColor: "rgba(255, 255, 255, 0.8)",
+        textColor: "#2d3436",
+        buttonColor: "#0984e3",
+        buttonTextColor: "#ffffff",
+        acceptButtonText: "Accept",
+        layout: "box"
+      },
+      mockup: (
+        <TemplatePreview 
+          bannerText="We use cookies to offer you a better browsing experience."
+          bgColor="rgba(255, 255, 255, 0.8)"
+          textColor="#2d3436"
+          buttonColor="#0984e3"
+          buttonTextColor="#ffffff"
+          acceptText="Accept"
+          layout="box"
         />
       )
     }

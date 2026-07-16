@@ -36,6 +36,7 @@ export const loader = async ({ request }) => {
         buttonColor: "#FFFFFF",
         buttonTextColor: "#000000",
         position: "bottom",
+        layout: "banner",
       },
     });
   }
@@ -58,6 +59,7 @@ export const action = async ({ request }) => {
     buttonColor: formData.get("buttonColor"),
     buttonTextColor: formData.get("buttonTextColor"),
     position: formData.get("position"),
+    layout: formData.get("layout") || "banner",
   };
 
   await prisma.shopSettings.upsert({
@@ -204,6 +206,17 @@ export default function Index() {
                     value={formState?.position || "bottom"}
                     onChange={handleChange}
                   />
+                  <Select
+                    label="Layout Style"
+                    id="layout"
+                    options={[
+                      { label: "Full Width Banner", value: "banner" },
+                      { label: "Floating Pill", value: "pill" },
+                      { label: "Floating Box", value: "box" },
+                    ]}
+                    value={formState?.layout || "banner"}
+                    onChange={handleChange}
+                  />
                 </FormLayout>
               </BlockStack>
             </Card>
@@ -227,23 +240,33 @@ export default function Index() {
               background: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23f4f6f8\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")',
               padding: '40px 20px',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '200px'
+              alignItems: formState?.layout === "box" ? 'flex-end' : (formState?.layout === "banner" && formState?.position === "top" ? 'flex-start' : 'center'),
+              justifyContent: formState?.layout === "box" ? 'flex-start' : 'center',
+              minHeight: '200px',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
               <div
                 style={{
-                  width: "100%",
+                  width: formState?.layout === "banner" ? "100%" : (formState?.layout === "pill" ? "auto" : "100%"),
+                  maxWidth: formState?.layout === "box" ? "300px" : "100%",
                   backgroundColor: formState?.bgColor || "#000000",
                   color: formState?.textColor || "#ffffff",
-                  padding: "16px 20px",
+                  padding: formState?.layout === "pill" ? "12px 24px" : "16px 20px",
                   display: "flex",
-                  flexDirection: "column",
+                  flexDirection: formState?.layout === "box" ? "column" : "row",
+                  justifyContent: "space-between",
+                  alignItems: formState?.layout === "box" ? "flex-start" : "center",
                   gap: "12px",
                   boxSizing: "border-box",
                   fontFamily: "sans-serif",
-                  borderRadius: "8px",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
+                  borderRadius: formState?.layout === "banner" ? "0" : (formState?.layout === "pill" ? "50px" : "8px"),
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                  position: formState?.layout === "banner" ? "absolute" : "relative",
+                  bottom: formState?.layout === "banner" && formState?.position === "bottom" ? "0" : "auto",
+                  top: formState?.layout === "banner" && formState?.position === "top" ? "0" : "auto",
+                  left: formState?.layout === "banner" ? "0" : "auto",
+                  right: formState?.layout === "banner" ? "0" : "auto",
                 }}
               >
                 <div style={{ fontSize: '13px', lineHeight: 1.5, fontWeight: 500 }}>
@@ -259,7 +282,7 @@ export default function Index() {
                     </a>
                   )}
                 </div>
-                <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", width: formState?.layout === "box" ? "100%" : "auto" }}>
                   <button
                     style={{
                       background: "transparent",
