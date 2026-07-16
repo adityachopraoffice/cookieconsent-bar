@@ -2,7 +2,7 @@
 
 name = "cookieconsent-bar"
 client_id = "29d87f1a8b60ed6411173338b47d047e"
-application_url = "https://example.com"
+application_url = "https://cookieconsent-bar-livid.vercel.app"
 embedded = true
 
 [access_scopes]
@@ -10,7 +10,11 @@ embedded = true
 scopes = "read_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://cookieconsent-bar-livid.vercel.app/auth/callback",
+  "https://cookieconsent-bar-livid.vercel.app/auth/shopify/callback",
+  "https://cookieconsent-bar-livid.vercel.app/api/auth/callback"
+]
 
 [webhooks]
 api_version = "2026-10"
@@ -19,10 +23,9 @@ api_version = "2026-10"
 handle = "cookieconsent-extension"
 
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [app_proxy]
-url = "https://example.com/"
+url = "https://cookieconsent-bar-livid.vercel.app/"
 subpath = "cookieconsent-bar"
 prefix = "apps"
