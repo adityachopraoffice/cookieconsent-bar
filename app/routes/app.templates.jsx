@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { Page, Layout, BlockStack, Text, Modal } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { useSubmit, useNavigate, useActionData } from "react-router";
+import { useSubmit, useNavigate, useActionData, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+
+export const loader = async ({ request }) => {
+  const { billing } = await authenticate.admin(request);
+  const billingCheck = await billing.check({
+    plans: ["Premium Plan"],
+    isTest: true,
+  });
+  return { hasActivePayment: billingCheck.hasActivePayment };
+};
 
 export const action = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -171,6 +180,7 @@ export default function Templates() {
   const navigate = useNavigate();
   const shopify = useAppBridge();
   const actionData = useActionData();
+  const { hasActivePayment } = useLoaderData();
 
   useEffect(() => {
     if (actionData?.success) {
@@ -237,10 +247,10 @@ export default function Templates() {
     },
     {
       title: "Floating Pill",
-      tier: "STARTER",
+      tier: "PREMIUM",
       gradient: "linear-gradient(135deg, #fd79a8 0%, #fab1a0 100%)",
-      ctaText: "Upgrade to STARTER",
-      isUpgrade: true,
+      ctaText: hasActivePayment ? "Apply Design" : "Upgrade to Premium",
+      isUpgrade: !hasActivePayment,
       config: {
         bannerText: "🍪 We use cookies for a better experience.",
         bgColor: "#e8f4fd",
