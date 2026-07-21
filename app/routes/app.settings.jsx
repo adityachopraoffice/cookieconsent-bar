@@ -11,14 +11,23 @@ import {
   Text,
   FormLayout,
   Divider,
+  Banner,
+  Badge,
 } from "@shopify/polaris";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const shop = session.shop;
+  
+  const billingCheck = await billing.check({
+    plans: ["Premium Plan"],
+    isTest: true,
+  });
+  const hasPremium = billingCheck.hasActivePayment;
+
   let settings = await prisma.shopSettings.findUnique({
     where: { shop },
   });
@@ -41,26 +50,41 @@ export const loader = async ({ request }) => {
     });
   }
 
-  return settings;
+  return { settings, hasPremium };
 };
 
 export const action = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const shop = session.shop;
   const formData = await request.formData();
+  
+  const billingCheck = await billing.check({
+    plans: ["Premium Plan"],
+    isTest: true,
+  });
+  const hasPremium = billingCheck.hasActivePayment;
   
   const data = {
     bannerText: formData.get("bannerText"),
     privacyPolicyUrl: formData.get("privacyPolicyUrl"),
     acceptButtonText: formData.get("acceptButtonText"),
     declineButtonText: formData.get("declineButtonText"),
-    bgColor: formData.get("bgColor"),
-    textColor: formData.get("textColor"),
-    buttonColor: formData.get("buttonColor"),
-    buttonTextColor: formData.get("buttonTextColor"),
     position: formData.get("position"),
-    layout: formData.get("layout") || "banner",
   };
+
+  if (hasPremium) {
+    data.bgColor = formData.get("bgColor");
+    data.textColor = formData.get("textColor");
+    data.buttonColor = formData.get("buttonColor");
+    data.buttonTextColor = formData.get("buttonTextColor");
+    data.layout = formData.get("layout") || "banner";
+  } else {
+    data.bgColor = "#000000";
+    data.textColor = "#FFFFFF";
+    data.buttonColor = "#FFFFFF";
+    data.buttonTextColor = "#000000";
+    data.layout = "banner";
+  }
 
   await prisma.shopSettings.upsert({
     where: { shop },
@@ -72,19 +96,19 @@ export const action = async ({ request }) => {
 };
 
 export default function Index() {
-  const loaderData = useLoaderData();
+  const { settings, hasPremium } = useLoaderData();
   const actionData = useActionData();
   const submit = useSubmit();
   const shopify = useAppBridge();
 
-  const [formState, setFormState] = useState(loaderData);
+  const [formState, setFormState] = useState(settings);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (loaderData) {
-      setFormState(loaderData);
+    if (settings) {
+      setFormState(settings);
     }
-  }, [loaderData]);
+  }, [settings]);
 
   useEffect(() => {
     if (actionData?.success) {
@@ -159,8 +183,26 @@ export default function Index() {
 
             <Card padding="500">
               <BlockStack gap="400">
-                <Text as="h2" variant="headingMd">Appearance</Text>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text as="h2" variant="headingMd">Appearance</Text>
+                  {!hasPremium && <Badge tone="info">Premium Feature</Badge>}
+                </div>
                 <Text as="p" tone="subdued">Customize the colors to match your brand identity.</Text>
+                
+                {!hasPremium && (
+                  <Banner
+                    title="Unlock Advanced Customization"
+                    tone="info"
+                    action={{
+                      content: 'Upgrade to Premium',
+                      url: '/app/pricing',
+                    }}
+                  >
+                    <p>
+                      Upgrade to the Premium Plan to unlock custom colors, premium layout templates, and remove the watermark.
+                    </p>
+                  </Banner>
+                )}
                 <Divider />
                 <FormLayout>
                   <FormLayout.Group>
@@ -168,17 +210,19 @@ export default function Index() {
                       label="Background Color"
                       type="color"
                       id="bgColor"
-                      value={formState?.bgColor || "#000000"}
+                      value={hasPremium ? (formState?.bgColor || "#000000") : "#000000"}
                       onChange={handleChange}
                       autoComplete="off"
+                      disabled={!hasPremium}
                     />
                     <TextField
                       label="Text Color"
                       type="color"
                       id="textColor"
-                      value={formState?.textColor || "#ffffff"}
+                      value={hasPremium ? (formState?.textColor || "#ffffff") : "#ffffff"}
                       onChange={handleChange}
                       autoComplete="off"
+                      disabled={!hasPremium}
                     />
                   </FormLayout.Group>
                   <FormLayout.Group>
@@ -186,17 +230,19 @@ export default function Index() {
                       label="Button Color"
                       type="color"
                       id="buttonColor"
-                      value={formState?.buttonColor || "#ffffff"}
+                      value={hasPremium ? (formState?.buttonColor || "#ffffff") : "#ffffff"}
                       onChange={handleChange}
                       autoComplete="off"
+                      disabled={!hasPremium}
                     />
                     <TextField
                       label="Button Text Color"
                       type="color"
                       id="buttonTextColor"
-                      value={formState?.buttonTextColor || "#000000"}
+                      value={hasPremium ? (formState?.buttonTextColor || "#000000") : "#000000"}
                       onChange={handleChange}
                       autoComplete="off"
+                      disabled={!hasPremium}
                     />
                   </FormLayout.Group>
                   <Select
@@ -211,11 +257,12 @@ export default function Index() {
                     id="layout"
                     options={[
                       { label: "Full Width Banner", value: "banner" },
-                      { label: "Floating Pill", value: "pill" },
-                      { label: "Floating Box", value: "box" },
+                      { label: "Floating Pill", value: "pill", disabled: !hasPremium },
+                      { label: "Floating Box", value: "box", disabled: !hasPremium },
                     ]}
-                    value={formState?.layout || "banner"}
+                    value={hasPremium ? (formState?.layout || "banner") : "banner"}
                     onChange={handleChange}
+                    disabled={!hasPremium}
                   />
                 </FormLayout>
               </BlockStack>
