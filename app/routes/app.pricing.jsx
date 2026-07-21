@@ -26,7 +26,7 @@ export const action = async ({ request }) => {
   const plan = formData.get("plan");
 
   if (plan === "Premium Plan") {
-    await billing.request({
+    return await billing.request({
       plan: "Premium Plan",
       isTest: true,
     });
@@ -37,11 +37,12 @@ export const action = async ({ request }) => {
     });
     const subscription = billingCheck.appSubscriptions[0];
     if (subscription) {
-      await billing.cancel({
+      const result = await billing.cancel({
         subscriptionId: subscription.id,
         isTest: true,
         prorate: true,
       });
+      return result;
     }
   }
   return null;
