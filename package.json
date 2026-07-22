@@ -1,5 +1,5 @@
 {
-  "name": "cookieconsent-bar",
+  "name": "easycookiebar",
   "private": true,
   "scripts": {
     "build": "prisma generate && react-router build",

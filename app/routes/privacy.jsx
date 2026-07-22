@@ -1,7 +1,7 @@
 export const meta = () => {
   return [
-    { title: "Privacy Policy | Cookie Consent Bar" },
-    { name: "description", content: "Privacy policy for the Cookie Consent Bar Shopify App." }
+    { title: "Privacy Policy | EasyCookieBar" },
+    { name: "description", content: "Privacy policy for the EasyCookieBar Shopify App." }
   ];
 };
 
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
       
       <section style={{ marginBottom: '32px' }}>
         <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>1. Information We Collect</h2>
-        <p>When you install the Cookie Consent Bar app, we automatically access certain types of information from your Shopify account:</p>
+        <p>When you install the EasyCookieBar app, we automatically access certain types of information from your Shopify account:</p>
         <ul style={{ paddingLeft: '20px', marginTop: '8px' }}>
           <li><strong>Store Information:</strong> Your store domain and basic contact information to provide you with app updates and customer support.</li>
           <li><strong>Theme Data:</strong> We may access your theme files to inject our cookie consent script to make it visible on your storefront.</li>
@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
         <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>2. How We Use Your Information</h2>
         <p>We use the collected information for the following purposes:</p>
         <ul style={{ paddingLeft: '20px', marginTop: '8px' }}>
-          <li>To provide and operate the Cookie Consent Bar service.</li>
+          <li>To provide and operate the EasyCookieBar service.</li>
           <li>To communicate with you regarding updates, support, or billing.</li>
           <li>To ensure your store complies with our terms of service and billing requirements.</li>
         </ul>

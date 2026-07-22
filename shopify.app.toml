@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "cookieconsent-bar"
+name = "easycookiebar"
 client_id = "29d87f1a8b60ed6411173338b47d047e"
 application_url = "https://cookieconsent-bar-livid.vercel.app"
 embedded = true
@@ -27,5 +27,5 @@ automatically_update_urls_on_dev = true
 
 [app_proxy]
 url = "https://cookieconsent-bar-livid.vercel.app/"
-subpath = "cookieconsent-bar"
+subpath = "easycookiebar"
 prefix = "apps"

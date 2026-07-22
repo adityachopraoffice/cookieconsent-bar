@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // However the instruction says fetch from /apps/cookieconsent-bar/api/settings?shop={shop}
   // Wait, the prompt says exactly: "Fetch settings from /apps/cookieconsent-bar/api/settings?shop={shop}"
   
-  fetch('/apps/cookieconsent-bar/api/settings?shop=' + shop)
+  fetch('/apps/easycookiebar/api/settings?shop=' + shop)
     .then(function(res) { return res.json(); })
     .then(function(settings) {
       if (!settings) return;

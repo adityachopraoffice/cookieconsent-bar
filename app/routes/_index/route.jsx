@@ -21,7 +21,7 @@ export default function App() {
       
       <div className={styles.content}>
         <div className={styles.hero}>
-          <div className={styles.badge}>✨ Cookie Consent Bar</div>
+          <div className={styles.badge}>✨ EasyCookieBar</div>
           <h1 className={styles.heading}>
             Make your store <span className={styles.gradientText}>compliant</span> in minutes.
           </h1>
