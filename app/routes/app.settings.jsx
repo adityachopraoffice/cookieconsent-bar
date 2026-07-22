@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSubmit, useLoaderData, useActionData } from "react-router";
+import { useSubmit, useLoaderData, useActionData, useNavigate } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import {
   Page,
@@ -100,6 +100,7 @@ export default function Index() {
   const actionData = useActionData();
   const submit = useSubmit();
   const shopify = useAppBridge();
+  const navigate = useNavigate();
 
   const [formState, setFormState] = useState(settings);
   const [isSaving, setIsSaving] = useState(false);
@@ -195,7 +196,7 @@ export default function Index() {
                     tone="info"
                     action={{
                       content: 'Upgrade to Premium',
-                      url: '/app/pricing',
+                      onAction: () => navigate('/app/pricing'),
                     }}
                   >
                     <p>
