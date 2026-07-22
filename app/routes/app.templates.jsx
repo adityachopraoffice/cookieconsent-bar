@@ -9,7 +9,7 @@ export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
   const billingCheck = await billing.check({
     plans: ["Premium Plan"],
-    isTest: true,
+    isTest: process.env.NODE_ENV !== "production",
   });
   return { hasActivePayment: billingCheck.hasActivePayment };
 };
