@@ -12,7 +12,7 @@ export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
   const billingCheck = await billing.check({
     plans: ["Premium Plan"],
-    isTest: process.env.NODE_ENV !== "production",
+    isTest: true,
   });
 
   return {
@@ -28,18 +28,18 @@ export const action = async ({ request }) => {
   if (plan === "Premium Plan") {
     return await billing.request({
       plan: "Premium Plan",
-      isTest: process.env.NODE_ENV !== "production",
+      isTest: true,
     });
   } else if (plan === "Cancel") {
     const billingCheck = await billing.check({
       plans: ["Premium Plan"],
-      isTest: process.env.NODE_ENV !== "production",
+      isTest: true,
     });
     const subscription = billingCheck.appSubscriptions[0];
     if (subscription) {
       const result = await billing.cancel({
         subscriptionId: subscription.id,
-        isTest: process.env.NODE_ENV !== "production",
+        isTest: true,
         prorate: true,
       });
       return result;

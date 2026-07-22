@@ -24,7 +24,7 @@ export const loader = async ({ request }) => {
   
   const billingCheck = await billing.check({
     plans: ["Premium Plan"],
-    isTest: process.env.NODE_ENV !== "production",
+    isTest: true,
   });
   const hasPremium = billingCheck.hasActivePayment;
 
@@ -60,7 +60,7 @@ export const action = async ({ request }) => {
   
   const billingCheck = await billing.check({
     plans: ["Premium Plan"],
-    isTest: process.env.NODE_ENV !== "production",
+    isTest: true,
   });
   const hasPremium = billingCheck.hasActivePayment;
   
