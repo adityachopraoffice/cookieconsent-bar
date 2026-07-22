@@ -113,7 +113,7 @@ export default function Index() {
 
   useEffect(() => {
     if (actionData?.success) {
-      shopify.toast.show("Settings saved");
+      shopify.toast.show("Customization saved");
       setIsSaving(false);
     }
   }, [actionData, shopify]);
@@ -271,7 +271,7 @@ export default function Index() {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: '40px' }}>
               <Button variant="primary" onClick={handleSave} loading={isSaving} size="large">
-                Save Settings
+                Save Customization
               </Button>
             </div>
           </BlockStack>

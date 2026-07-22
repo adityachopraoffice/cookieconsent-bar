@@ -23,7 +23,7 @@ export default function App() {
       <AppProvider embedded apiKey={apiKey}>
         <ui-nav-menu>
           <a href="/app" rel="home">Dashboard</a>
-          <a href="/app/settings">Settings</a>
+          <a href="/app/settings">Customization</a>
           <a href="/app/templates">Templates</a>
           <a href="/app/pricing">Pricing</a>
         </ui-nav-menu>

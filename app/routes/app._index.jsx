@@ -156,7 +156,7 @@ export default function Dashboard() {
               ⚙️
             </div>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#202223', marginBottom: '8px' }}>Customize Settings</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#202223', marginBottom: '8px' }}>Customization</h3>
               <p style={{ color: '#6d7175', fontSize: '14px', lineHeight: 1.5 }}>
                 Fine-tune your colors, text, and banner position to match your brand perfectly.
               </p>
