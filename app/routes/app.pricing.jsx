@@ -126,10 +126,6 @@ export default function Pricing() {
                 <span style={{ color: '#e1e3e5' }}><CheckIcon /></span>
                 Premium Templates
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#a6a8ab', fontSize: '15px', textDecoration: 'line-through' }}>
-                <span style={{ color: '#e1e3e5' }}><CheckIcon /></span>
-                No Watermark
-              </li>
             </ul>
 
             <button 
@@ -215,10 +211,6 @@ export default function Pricing() {
               <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
                 <span style={{ color: '#a29bfe' }}><CheckIcon /></span>
                 Advanced Color Customization
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
-                <span style={{ color: '#a29bfe' }}><CheckIcon /></span>
-                No Watermark
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px' }}>
                 <span style={{ color: '#a29bfe' }}><CheckIcon /></span>

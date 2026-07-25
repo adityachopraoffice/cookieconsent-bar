@@ -190,7 +190,7 @@ export default function Dashboard() {
             <div>
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#202223', marginBottom: '8px' }}>Unlock Premium</h3>
               <p style={{ color: '#6d7175', fontSize: '14px', lineHeight: 1.5 }}>
-                Remove watermarks, access premium templates, and get priority support.
+                Access premium templates, advanced color customization, and get priority support.
               </p>
             </div>
           </div>
