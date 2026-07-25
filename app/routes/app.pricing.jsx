@@ -137,14 +137,27 @@ export default function Pricing() {
               onClick={hasActivePayment ? handleCancel : undefined}
               style={{
                 width: '100%',
-                background: '#f4f6f8',
-                color: '#8c9196',
-                border: '1px solid #e1e3e5',
+                background: !hasActivePayment ? '#f4f6f8' : '#ffffff',
+                color: !hasActivePayment ? '#8c9196' : '#202223',
+                border: !hasActivePayment ? '1px solid #e1e3e5' : '1px solid #c9cccf',
                 padding: '16px',
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: 'bold',
                 cursor: !hasActivePayment ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseOver={(e) => {
+                if(hasActivePayment) {
+                  e.target.style.background = '#f8f9fa';
+                  e.target.style.borderColor = '#8c9196';
+                }
+              }}
+              onMouseOut={(e) => {
+                if(hasActivePayment) {
+                  e.target.style.background = '#ffffff';
+                  e.target.style.borderColor = '#c9cccf';
+                }
               }}
             >
               {!hasActivePayment ? "Current Plan" : "Downgrade to Free"}
