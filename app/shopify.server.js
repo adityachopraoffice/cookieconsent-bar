@@ -19,21 +19,21 @@ const shopify = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
   billing: {
-    "Free Plan": {
+    "Basic Plan": {
       replacementBehavior: BillingReplacementBehavior.ApplyImmediately,
       lineItems: [
         {
-          amount: 1.0,
+          amount: 49.00,
           currencyCode: "USD",
           interval: BillingInterval.Every30Days,
         },
       ],
     },
-    "Premium Plan": {
+    "Pro Plan": {
       replacementBehavior: BillingReplacementBehavior.ApplyImmediately,
       lineItems: [
         {
-          amount: 9.99,
+          amount: 109.00,
           currencyCode: "USD",
           interval: BillingInterval.Every30Days,
         },

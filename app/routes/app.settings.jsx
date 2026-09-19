@@ -23,8 +23,8 @@ export const loader = async ({ request }) => {
   const shop = session.shop;
   
   const billingCheck = await billing.check({
-    plans: ["Premium Plan"],
-    isTest: true,
+    plans: ["Basic Plan", "Pro Plan"],
+    isTest: false,
   });
   const hasPremium = billingCheck.hasActivePayment;
 
@@ -59,8 +59,8 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   
   const billingCheck = await billing.check({
-    plans: ["Premium Plan"],
-    isTest: true,
+    plans: ["Basic Plan", "Pro Plan"],
+    isTest: false,
   });
   const hasPremium = billingCheck.hasActivePayment;
   

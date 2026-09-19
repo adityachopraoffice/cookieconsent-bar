@@ -11,12 +11,16 @@ export const headers = (headersArgs) => {
 export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
   const billingCheck = await billing.check({
-    plans: ["Premium Plan"],
-    isTest: true,
+    plans: ["Basic Plan", "Pro Plan"],
+    isTest: false,
   });
+
+  const activeSubscription = billingCheck.appSubscriptions?.[0];
+  const activePlan = activeSubscription ? activeSubscription.name : "Free Plan";
 
   return {
     hasActivePayment: billingCheck.hasActivePayment,
+    activePlan,
   };
 };
 
@@ -25,21 +29,21 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const plan = formData.get("plan");
 
-  if (plan === "Premium Plan") {
+  if (plan === "Basic Plan" || plan === "Pro Plan") {
     return await billing.request({
-      plan: "Premium Plan",
-      isTest: true,
+      plan: plan,
+      isTest: false,
     });
   } else if (plan === "Cancel") {
     const billingCheck = await billing.check({
-      plans: ["Premium Plan"],
-      isTest: true,
+      plans: ["Basic Plan", "Pro Plan"],
+      isTest: false,
     });
     const subscription = billingCheck.appSubscriptions[0];
     if (subscription) {
       const result = await billing.cancel({
         subscriptionId: subscription.id,
-        isTest: true,
+        isTest: false,
         prorate: true,
       });
       return result;
@@ -56,10 +60,10 @@ const CheckIcon = () => (
 
 export default function Pricing() {
   const submit = useSubmit();
-  const { hasActivePayment } = useLoaderData();
+  const { hasActivePayment, activePlan } = useLoaderData();
 
-  const handleUpgrade = () => {
-    submit({ plan: "Premium Plan" }, { method: "post" });
+  const handleUpgrade = (planName) => {
+    submit({ plan: planName }, { method: "post" });
   };
   
   const handleCancel = () => {
@@ -81,9 +85,9 @@ export default function Pricing() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '30px',
-          maxWidth: '900px',
+          maxWidth: '1200px',
           margin: '0 auto',
           padding: '0 20px',
           alignItems: 'stretch'
@@ -129,38 +133,95 @@ export default function Pricing() {
             </ul>
 
             <button 
-              disabled={!hasActivePayment}
-              onClick={hasActivePayment ? handleCancel : undefined}
+              disabled={activePlan === "Free Plan"}
+              onClick={activePlan !== "Free Plan" ? handleCancel : undefined}
               style={{
                 width: '100%',
-                background: !hasActivePayment ? '#f4f6f8' : '#ffffff',
-                color: !hasActivePayment ? '#8c9196' : '#202223',
-                border: !hasActivePayment ? '1px solid #e1e3e5' : '1px solid #c9cccf',
+                background: activePlan === "Free Plan" ? '#f4f6f8' : '#ffffff',
+                color: activePlan === "Free Plan" ? '#8c9196' : '#202223',
+                border: activePlan === "Free Plan" ? '1px solid #e1e3e5' : '1px solid #c9cccf',
                 padding: '16px',
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: 'bold',
-                cursor: !hasActivePayment ? 'not-allowed' : 'pointer',
+                cursor: activePlan === "Free Plan" ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s ease',
               }}
               onMouseOver={(e) => {
-                if(hasActivePayment) {
+                if(activePlan !== "Free Plan") {
                   e.target.style.background = '#f8f9fa';
                   e.target.style.borderColor = '#8c9196';
                 }
               }}
               onMouseOut={(e) => {
-                if(hasActivePayment) {
+                if(activePlan !== "Free Plan") {
                   e.target.style.background = '#ffffff';
                   e.target.style.borderColor = '#c9cccf';
                 }
               }}
             >
-              {!hasActivePayment ? "Current Plan" : "Downgrade to Free"}
+              {activePlan === "Free Plan" ? "Current Plan" : "Downgrade to Free"}
             </button>
           </div>
 
-          {/* Premium Plan */}
+          {/* Basic Plan */}
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #e1e3e5',
+            borderRadius: '24px',
+            padding: '40px 32px',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+            transition: 'transform 0.2s',
+          }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#202223', marginBottom: '12px' }}>Basic Plan</h2>
+            <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '24px' }}>
+              <span style={{ fontSize: '42px', fontWeight: '900', color: '#202223', letterSpacing: '-1px' }}>$49</span>
+              <span style={{ fontSize: '15px', color: '#6d7175', marginLeft: '4px' }}>/ month</span>
+            </div>
+            
+            <p style={{ color: '#6d7175', fontSize: '15px', marginBottom: '32px', lineHeight: 1.5 }}>
+              Enhanced features for growing businesses.
+            </p>
+
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
+                <span style={{ color: '#00cceb' }}><CheckIcon /></span>
+                Premium Templates
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
+                <span style={{ color: '#00cceb' }}><CheckIcon /></span>
+                Advanced Color Customization
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px' }}>
+                <span style={{ color: '#00cceb' }}><CheckIcon /></span>
+                Everything in Free
+              </li>
+            </ul>
+
+            <button 
+              onClick={activePlan === "Basic Plan" ? undefined : () => handleUpgrade("Basic Plan")}
+              disabled={activePlan === "Basic Plan"}
+              style={{
+                width: '100%',
+                background: activePlan === "Basic Plan" ? '#f4f6f8' : '#1f2124',
+                color: activePlan === "Basic Plan" ? '#8c9196' : '#fff',
+                border: activePlan === "Basic Plan" ? '1px solid #e1e3e5' : 'none',
+                padding: '16px',
+                borderRadius: '12px',
+                fontSize: '15px',
+                fontWeight: 'bold',
+                cursor: activePlan === "Basic Plan" ? 'not-allowed' : 'pointer',
+                boxShadow: activePlan === "Basic Plan" ? 'none' : '0 4px 15px rgba(31, 33, 36, 0.2)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {activePlan === "Basic Plan" ? "Current Plan" : "Upgrade to Basic"}
+            </button>
+          </div>
+
+          {/* Pro Plan */}
           <div style={{
             background: '#ffffff',
             borderRadius: '24px',
@@ -193,9 +254,9 @@ export default function Pricing() {
               Most Popular
             </div>
 
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#202223', marginBottom: '12px' }}>Premium Plan</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#202223', marginBottom: '12px' }}>Pro Plan</h2>
             <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '24px' }}>
-              <span style={{ fontSize: '42px', fontWeight: '900', color: '#202223', letterSpacing: '-1px' }}>$9.99</span>
+              <span style={{ fontSize: '42px', fontWeight: '900', color: '#202223', letterSpacing: '-1px' }}>$109</span>
               <span style={{ fontSize: '15px', color: '#6d7175', marginLeft: '4px' }}>/ month</span>
             </div>
             
@@ -206,7 +267,7 @@ export default function Pricing() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
                 <span style={{ color: '#a29bfe' }}><CheckIcon /></span>
-                Premium Templates
+                All Premium Templates
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px', fontWeight: 500 }}>
                 <span style={{ color: '#a29bfe' }}><CheckIcon /></span>
@@ -218,40 +279,40 @@ export default function Pricing() {
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#202223', fontSize: '15px' }}>
                 <span style={{ color: '#a29bfe' }}><CheckIcon /></span>
-                Everything in Free
+                Everything in Basic
               </li>
             </ul>
 
             <button 
-              onClick={hasActivePayment ? undefined : handleUpgrade}
-              disabled={hasActivePayment}
+              onClick={activePlan === "Pro Plan" ? undefined : () => handleUpgrade("Pro Plan")}
+              disabled={activePlan === "Pro Plan"}
               style={{
                 width: '100%',
-                background: hasActivePayment ? '#f4f6f8' : '#1f2124',
-                color: hasActivePayment ? '#8c9196' : '#fff',
-                border: hasActivePayment ? '1px solid #e1e3e5' : 'none',
+                background: activePlan === "Pro Plan" ? '#f4f6f8' : '#1f2124',
+                color: activePlan === "Pro Plan" ? '#8c9196' : '#fff',
+                border: activePlan === "Pro Plan" ? '1px solid #e1e3e5' : 'none',
                 padding: '16px',
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: 'bold',
-                cursor: hasActivePayment ? 'not-allowed' : 'pointer',
-                boxShadow: hasActivePayment ? 'none' : '0 4px 15px rgba(31, 33, 36, 0.2)',
+                cursor: activePlan === "Pro Plan" ? 'not-allowed' : 'pointer',
+                boxShadow: activePlan === "Pro Plan" ? 'none' : '0 4px 15px rgba(31, 33, 36, 0.2)',
                 transition: 'all 0.2s ease',
               }}
               onMouseOver={(e) => {
-                if(!hasActivePayment) {
+                if(activePlan !== "Pro Plan") {
                   e.target.style.transform = 'translateY(-2px)';
                   e.target.style.boxShadow = '0 6px 20px rgba(31, 33, 36, 0.3)';
                 }
               }}
               onMouseOut={(e) => {
-                if(!hasActivePayment) {
+                if(activePlan !== "Pro Plan") {
                   e.target.style.transform = 'translateY(0)';
                   e.target.style.boxShadow = '0 4px 15px rgba(31, 33, 36, 0.2)';
                 }
               }}
             >
-              {hasActivePayment ? "Current Plan" : "Upgrade to Premium"}
+              {activePlan === "Pro Plan" ? "Current Plan" : "Upgrade to Pro"}
             </button>
           </div>
         </div>

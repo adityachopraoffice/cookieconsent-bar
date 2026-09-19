@@ -8,8 +8,8 @@ import prisma from "../db.server";
 export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
   const billingCheck = await billing.check({
-    plans: ["Premium Plan"],
-    isTest: true,
+    plans: ["Basic Plan", "Pro Plan"],
+    isTest: false,
   });
   return { hasActivePayment: billingCheck.hasActivePayment };
 };
